@@ -1,14 +1,14 @@
 package tictactoe;
 
-/**
- * Hello world!
- *
- */
 public class App 
 {
-    public static void main( String[] args )
+    public static void main( String[] args ) throws Exception
     {
-        
-        System.out.println( "Hello World!" );
+        Game g = new Game();
+        Automaton a = new Automaton(g);
+
+        int goodMove = a.findGoodMove();
+
+        System.out.println("Good move is: " + goodMove);
     }
 }
