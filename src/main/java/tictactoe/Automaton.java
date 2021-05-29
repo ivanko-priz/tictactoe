@@ -30,7 +30,7 @@ public class Automaton {
             // System.out.println(Arrays.toString(this.depth));
             // System.out.println(Arrays.toString(this.moves));
 
-            int bestMove = 0;
+            int bestMove = legalMoves[0];
 
             for (int i = 0; i < this.moves.length; i++) {
                 if (
