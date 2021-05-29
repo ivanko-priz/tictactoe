@@ -1,48 +1,55 @@
 package tictactoe;
 
-import java.util.TreeMap;
+import java.util.Arrays;
 
 public class Automaton {
     private Game g;
-    private TreeMap<Integer, Integer> moves;
+    private int[] depth;
+    private int[] moves;
+
     private char currentPlayer;
 
     Automaton(Game g) {
         this.g = g;
-        this.moves = new TreeMap<>();
     }
 
     public int findGoodMove() {
+        this.moves = new int[9];
+        this.depth = new int[9];
+        this.currentPlayer = this.g.getSideToMove();
+
         int[] legalMoves = this.g.getLegalMoves();
         
-        this.currentPlayer = this.g.getSideToMove();
-        this.moves = new TreeMap<>();
-
         for (int legalMove : legalMoves) {
-            if (isMoveWinning(this.g.copy(), legalMove)) {
-                this.moves.put(legalMove, this.moves.containsKey(legalMove) ? this.moves.get(legalMove) + 1 : 1);
-            }
+            isMoveWinning(this.g.copy(), legalMove, 1);
         }
 
-        if (this.moves.size() == 0) {
+        if (this.moves.length == 0) {
             return -1;
         } else {
-            // System.out.println("Good moves are:");
-            // System.out.println(this.moves);
-            
-            int maxKey = 0;
+            // System.out.println(Arrays.toString(this.depth));
+            // System.out.println(Arrays.toString(this.moves));
 
-            for (int key : this.moves.keySet()) {
-                if (this.moves.get(key) > this.moves.get(maxKey)) {
-                    maxKey = key;
+            int bestMove = 0;
+
+            for (int i = 0; i < this.moves.length; i++) {
+                if (
+                    this.moves[i] > this.moves[bestMove]
+                    || (this.moves[i] == this.moves[bestMove]
+                    && this.depth[i] != 0
+                    && this.depth[i] < this.depth[bestMove])
+                ) {
+                    bestMove = i;
                 }
             }
 
-            return maxKey;
+            return bestMove;
         }
     }
 
-    private boolean isMoveWinning(Game g, int move) {
+    private boolean isMoveWinning(Game g, int move, int d) {
+        boolean hasWinningMoves = false;
+
         try {
             g.makeMove(move);
         } catch (Exception e) {
@@ -51,10 +58,12 @@ public class Automaton {
         }
 
         if (g.isGameOver()) {
-            if (g.getWinner() != g.getSideToMove()) {
-                // if (g.getSideToMove() != this.currentPlayer) {
-                //     this.moves.put(move, this.moves.containsKey(move) ? this.moves.get(move) + 1 : 1);
-                // }
+            if (g.getWinner() == this.currentPlayer) {
+                this.moves[move] += 1;
+
+                if (this.depth[move] > d || this.depth[move] == 0) {
+                    this.depth[move] = d;
+                }
 
                 return true;
             }
@@ -65,16 +74,15 @@ public class Automaton {
         int[] legalMoves = g.getLegalMoves();
 
         for (int legalMove : legalMoves) {
-            if (!isMoveWinning(g.copy(), legalMove)) {
+            if (!isMoveWinning(g.copy(), legalMove, d+1)) {
                 if (g.getSideToMove() != currentPlayer) {
-                    this.moves.put(legalMove, this.moves.containsKey(legalMove) ? this.moves.get(legalMove) + 1 : 1);
-                }
+                    this.moves[move] += 1;
 
-                return true;
+                    hasWinningMoves = true;
+                }
             }
         }
 
-        return false;
+        return hasWinningMoves;
     }
-
 }
