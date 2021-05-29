@@ -1,6 +1,6 @@
 package tictactoe;
 
-import java.util.Arrays;
+// import java.util.Arrays;
 
 public class Automaton {
     private Game g;
