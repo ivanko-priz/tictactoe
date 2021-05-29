@@ -35,11 +35,11 @@ public class Automaton {
             for (int i = 0; i < this.moves.length; i++) {
                 if (
                     this.moves[i] > this.moves[bestMove]
-                    || (this.moves[i] == this.moves[bestMove]
-                    && this.depth[i] != 0
-                    && this.depth[i] < this.depth[bestMove])
+                    || (this.moves[i] != 0 && this.depth[i] == 1)
                 ) {
                     bestMove = i;
+
+                    if (this.depth[i] == 1) break;
                 }
             }
 
